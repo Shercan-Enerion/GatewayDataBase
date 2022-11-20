@@ -41,6 +41,5 @@ async def get_csv():
 
 @web.post('/addData')
 async def webhook(request: dict):
-    print(request)
     controller.sendData(request)
     return ''
