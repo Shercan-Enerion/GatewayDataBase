@@ -1,5 +1,7 @@
 from fastapi import APIRouter
 from fastapi import Request, WebSocket, WebSocketDisconnect
+from fastapi.responses import JSONResponse
+from fastapi.encoders import jsonable_encoder
 from config.bd import BaseData
 import csv
 from bson.objectid import ObjectId
@@ -37,6 +39,17 @@ async def index(request: Request):
 @web.get("/get_csv")
 async def get_csv():
     return FileResponse('data.csv', filename='data.csv')
+
+
+@web.get("/get_registers")
+async def get_registers():
+    getData = controller.readData()
+    base = list(getData).copy()
+    for data in base:
+        data['TimeStamp'] = ObjectId(data['_id']).generation_time
+        data.pop('_id')
+    base = jsonable_encoder(base)
+    return JSONResponse(content=base)
 
 
 @web.post('/addData')
